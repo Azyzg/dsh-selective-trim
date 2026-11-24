@@ -18,12 +18,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/<你的用户名>/dsh-selective-trim.git"
+    "url": "git+https://github.com/Azyzg/dsh-selective-trim.git"
   },
   "bugs": {
-    "url": "https://github.com/<你的用户名>/dsh-selective-trim/issues"
+    "url": "https://github.com/Azyzg/dsh-selective-trim/issues"
   },
-  "homepage": "https://github.com/<你的用户名>/dsh-selective-trim#readme",
+  "homepage": "https://github.com/Azyzg/dsh-selective-trim#readme",
   "type": "module",
   "engines": {
     "node": ">=22",

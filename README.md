@@ -45,7 +45,7 @@ lib/api.mjs     HTTP 路由分发、ctx_dedupe 工具注册
 
 ```bash
 # 从 GitHub 装
-dsh plugin install github:<用户名>/dsh-selective-trim
+dsh plugin install github:Azyzg/dsh-selective-trim
 
 # 或本地开发（profile 里做 junction 后重启）
 dsh plugin install link:/绝对路径/dsh-selective-trim
