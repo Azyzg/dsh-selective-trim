@@ -21,6 +21,26 @@
 | `billion-context` | 强烈建议 | 百分比、折叠记忆、压缩账相关功能都依赖它；没装时这些功能不可用 |
 | 宿主离线校验器 | 强烈建议 | 写盘前的最后一道关卡，见下文 |
 
+## 目录结构
+
+```
+index.js        入口：注册 /dsh-context-cleaner 路由与 ctx_dedupe 工具，导出 __test
+client.js       面板（React，按需加载）
+lib/base.mjs    路径/常量/日志/状态容器（会话 API、账库句柄）
+lib/io.mjs      会话日志读写（多帧 zstd 解析、逐帧压缩、宿主校验器调用）
+lib/sessions.mjs 列会话、读标题/首句、工作区名还原、归档与工人过滤
+lib/analysis.mjs 分段、占用估算（usage 优先）、分析结果组装
+lib/ledger.mjs  压缩账：账本键（含 |sub: 子车道）、取记忆块、过闸（780K）
+lib/inject.mjs  重复系统注入的识别、统计、折叠
+lib/backup.mjs  备份/修剪/还原、活会话拦截、待重启标记
+lib/table.mjs   构成表文件模板、提示词、md 表解析、表视图持久化
+lib/ask.mjs     往会话里投递提问并等回话（进程内 followup / HTTP RPC）
+lib/clean.mjs   重建（窗口裁剪、坐标清理、轮步重编）、去重、按区间清除
+lib/ops.mjs     清旧轮、折叠记忆替换
+lib/transfer.mjs 复制记录、转移记录（新建会话后删原段）
+lib/api.mjs     HTTP 路由分发、ctx_dedupe 工具注册
+```
+
 ## 安装
 
 ```bash
