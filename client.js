@@ -95,6 +95,15 @@ window.__ModuleLoader__.load({
       }
       const [结果, 设结果] = useState(null)
   const 动作名 = 结果?.还原 ? '还原' : 结果?.折叠 ? '折叠重复注入' : 结果?.清旧 ? '清旧轮次' : 结果?.模式 ? '清理' : '这次操作'
+      const [备份表, 设备份表] = useState([])
+      const [注入, 设注入] = useState(null)
+      const [折确认, 设折确认] = useState(false)
+      const [问确认, 设问确认] = useState(false)
+      const [清确认, 设清确认] = useState(false)
+      const [保留轮数, 设保留轮数] = useState(10)
+      const [清旧模式, 设清旧模式] = useState('tools')
+      const [提醒重启, 设提醒重启] = useState(false)
+      const [帮开, 设帮开] = useState(false)
   const [帮文, 设帮文] = useState('')
   useEffect(() => {
     if (!帮开) return
@@ -120,15 +129,6 @@ window.__ModuleLoader__.load({
       设注(e.下一步 || '')
     }
   }
-      const [备份表, 设备份表] = useState([])
-      const [注入, 设注入] = useState(null)
-      const [折确认, 设折确认] = useState(false)
-      const [问确认, 设问确认] = useState(false)
-      const [清确认, 设清确认] = useState(false)
-      const [保留轮数, 设保留轮数] = useState(10)
-      const [清旧模式, 设清旧模式] = useState('tools')
-      const [提醒重启, 设提醒重启] = useState(false)
-      const [帮开, 设帮开] = useState(false)
       const [还确认, 设还确认] = useState('')
       const [等秒, 设等秒] = useState(0)
       const [载完, 设载完] = useState(false)
