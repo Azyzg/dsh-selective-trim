@@ -49,6 +49,35 @@ window.__ModuleLoader__.load({
 
     const 占比色 = (p) => (p >= 70 ? 色.危 : p >= 40 ? 色.警 : 色.好)
 
+    // 面板渲染抛错时保留现场：显示错误与堆栈，而不是整块空白
+    class 兜底 extends React.Component {
+      constructor(props) {
+        super(props)
+        this.state = { 错: null }
+      }
+      static getDerivedStateFromError(错) {
+        return { 错 }
+      }
+      render() {
+        const 错 = this.state.错
+        if (!错) return this.props.children
+        return h('div', { style: { padding: '12px 14px', fontSize: 12, lineHeight: 1.6, height: '100%', overflowY: 'auto', boxSizing: 'border-box' } }, [
+          h('div', { key: 't', style: { fontWeight: 600, fontSize: 14, marginBottom: 6, color: 色.危 } }, '面板渲染出错'),
+          h('div', { key: 'm', style: { marginBottom: 8 } }, String(错?.message || 错)),
+          h('pre', {
+            key: 's',
+            style: { ...小字, whiteSpace: 'pre-wrap', wordBreak: 'break-word', background: 色.行, padding: 8, borderRadius: 6, maxHeight: 320, overflowY: 'auto' },
+          }, String(错?.stack || '').split('\n').slice(0, 12).join('\n')),
+          h('button', {
+            key: 'r',
+            style: { ...钮, marginTop: 10 },
+            onClick: () => this.setState({ 错: null }),
+          }, '重试'),
+        ])
+      }
+    }
+
+
     function 工作台(props) {
       const [会话表, 设会话表] = useState([])
       const [窗口, 设窗口] = useState(1048576)
@@ -63,6 +92,7 @@ window.__ModuleLoader__.load({
         设注(String((e && e.下一步) || ''))
       }
       const [结果, 设结果] = useState(null)
+  const 动作名 = 结果?.还原 ? '还原' : 结果?.折叠 ? '折叠重复注入' : 结果?.清旧 ? '清旧轮次' : 结果?.模式 ? '清理' : '这次操作'
       const [备份表, 设备份表] = useState([])
       const [注入, 设注入] = useState(null)
       const [折确认, 设折确认] = useState(false)
@@ -543,7 +573,7 @@ window.__ModuleLoader__.load({
             : null,
           结果
             ? h('div', { key: 'ok', style: { marginTop: 10, border: `1px solid ${色.边框}`, borderRadius: 8, padding: 8, fontSize: 12 } }, [
-              h('div', { key: 'a' }, 结果.模式 === 'memory' ? `换成了 ${结果.记忆块} 段压缩记忆，现在 ${结果.剩余事件} 条事件、${(结果.剩余字节 / 1048576).toFixed(2)}MB` : 结果.模式 === 'move' ? `搬走了这几段，新会话是「${结果.新会话}」（${结果.新事件} 条事件、${结果.新大小}）；这条现在 ${结果.剩余事件} 条事件` : `${结果.模式 === 'tools' ? '已清工具结果' : '已整轮删掉这几段'}，剩 ${结果.剩余事件} 条事件、${(结果.新字节 / 1048576).toFixed(2)}MB`),
+              h('div', { key: 'a' }, 结果.模式 === 'memory' ? `换成了 ${结果.记忆块 ?? 0} 段压缩记忆，现在 ${结果.剩余事件 ?? 0} 条事件、${((Number(结果.剩余字节) || 0) / 1048576).toFixed(2)}MB` : 结果.模式 === 'move' ? `搬走了这几段，新会话是「${结果.新会话}」（${结果.新事件} 条事件、${结果.新大小}）；这条现在 ${结果.剩余事件} 条事件` : `${结果.模式 === 'tools' ? '已清工具结果' : '已整轮删掉这几段'}，剩 ${结果.剩余事件 ?? 0} 条事件、${((Number(结果.新字节) || 0) / 1048576).toFixed(2)}MB`),
               h('div', { key: 'b', style: { ...小字, marginTop: 4 } }, 结果.备份 ? `备份：${结果.备份}` : ''),
               结果.备份 ? h('div', { key: 'c', style: { ...小字, marginTop: 4 } }, '要重启 DSH 才会按新文件加载。') : null,
             ])
@@ -721,7 +751,7 @@ window.__ModuleLoader__.load({
             结果.备份 ? h('div', { key: 'c', style: { ...小字, marginTop: 4 } }, '要重启 DSH 才会按新文件加载。') : null,
           ])
           : null,
-        提醒重启 ? 重启弹窗(() => 设提醒重启(false)) : null,
+        提醒重启 ? 重启弹窗(() => 设提醒重启(false), 动作名) : null,
       帮开 ? 帮助弹窗(() => 设帮开(false)) : null,
       ])
     }
@@ -759,8 +789,7 @@ window.__ModuleLoader__.load({
         ]))
     }
 
-    function 重启弹窗(关) {
-      const 做了什么 = 结果?.还原 ? '还原' : 结果?.折叠 ? '折叠重复注入' : 结果?.清旧 ? '清旧轮次' : 结果?.模式 ? '清理' : '这次操作'
+    function 重启弹窗(关, 做了什么 = '这次操作') {
 
       const 卡 = { maxWidth: 420, width: '100%', background: '#1b1b1f', color: '#eee', border: `1px solid ${色.边框}`, borderRadius: 12, padding: '18px 18px 14px', boxShadow: '0 12px 40px rgba(0,0,0,.5)', fontSize: 13, lineHeight: 1.6 }
       const 罩 = { position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }
@@ -825,7 +854,7 @@ window.__ModuleLoader__.load({
         }
         try {
           ctx.slots.inject('main', () => ctx.slots.inject('sidebar.panellist', () => {
-            const 停主 = ctx.slots.register({ name: 'main', key: 面板ID, inject: () => ({ 关 }) }, 工作台)
+            const 停主 = ctx.slots.register({ name: 'main', key: 面板ID, inject: () => ({ 关 }) }, (props) => h(兜底, null, h(工作台, props)))
             const 停行 = ctx.slots.register({ name: 'sidebar.panellist', id: 面板ID, order: 32, label: () => '会话瘦身' }, (props) => 入口行({ ...props, 开, 关 }))
             return () => {
               停行()
@@ -833,7 +862,7 @@ window.__ModuleLoader__.load({
             }
           }))
         } catch {
-          ctx.slots.inject('sidebar.panellist', () => ctx.slots.register({ name: 'sidebar.panellist', id: 面板ID, order: 32, label: () => '会话瘦身' }, (props) => 工作台({ ...props, 关 })))
+          ctx.slots.inject('sidebar.panellist', () => ctx.slots.register({ name: 'sidebar.panellist', id: 面板ID, order: 32, label: () => '会话瘦身' }, (props) => h(兜底, null, h(工作台, { ...props, 关 }))))
         }
       },
     }
