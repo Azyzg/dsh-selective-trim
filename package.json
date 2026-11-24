@@ -1,0 +1,56 @@
+{
+  "name": "dsh-context-cleaner",
+  "version": "0.1.0",
+  "description": "DSH 会话上下文清理面板：按工作段清理、折叠重复注入、备份与还原。",
+  "license": "MIT",
+  "author": "",
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "plugin",
+    "context",
+    "compaction",
+    "billion-context"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/<你的用户名>/dsh-context-cleaner.git"
+  },
+  "bugs": {
+    "url": "https://github.com/<你的用户名>/dsh-context-cleaner/issues"
+  },
+  "homepage": "https://github.com/<你的用户名>/dsh-context-cleaner#readme",
+  "type": "module",
+  "engines": {
+    "node": ">=22",
+    "dsh": ">=0.2.1-rc.2"
+  },
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "slots"
+      ],
+      "external": [
+        "react"
+      ]
+    }
+  }
+}

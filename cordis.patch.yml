@@ -1,0 +1,3 @@
+- insert:
+    - id: context-cleaner
+      name: dsh-context-cleaner

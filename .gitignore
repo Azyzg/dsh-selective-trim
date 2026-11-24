@@ -1,0 +1,14 @@
+node_modules/
+*.log
+*.before-*
+*.before-clean*
+*.before-memory*
+*.before-reframe*
+*.before-cut*
+*.before-trim*
+*.staged.zstd
+*.cleaning
+*.deduping
+context-cleaner-backups/
+.DS_Store
+Thumbs.db
