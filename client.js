@@ -25,6 +25,8 @@ window.__ModuleLoader__.load({
     }
     const 小字 = { fontSize: 11, color: 色.次 }
     const 服务基 = '/dsh-selective-trim'
+    // 帮助正文的出厂默认；改过的存在服务端（数据根/help.md）
+    const 默认帮助文 = "会话体积过大的坏处（个人经验，只供参考）：\n1.上下文占用较高时，模型注意力会降低，并更可能失忆。超窗会直接无法使用。\n2.请求体过大，你发送信息后模型会延迟收到（“暂未响应”或超长“分析需求”），严重时直接卡住（这个不太常见）。\n3.会话总体积过大，打开会话需要更长时间，并增加报错时的修理难度。\n\n  折叠记忆是用billion-context 的压缩记忆替换原对话，会话总体积会明显变小，请求体大小也会降。不过主要作用体现在压缩账失效后（billion-context炸了会话也能用）。折叠后，会话将无法直接读到被折叠原文（虽然它没事也不会去读）。有需要的话，可以让它去备份那里找，不一定要还原到备份。\n\n  如果因为本插件，会话出了任何问题，还原备份就可以解决。使用插件清理后，在重启 dsh（只关窗口不行）之前不要点开会话，不然就等着还原到备份吧。\n\n  要清理带 ⚠ 会话，由简到繁有以下参考方案：\n1.留最近几十轮，然后直接选清理工具结果。工具结果占了上下文的大部分，但会话可能失去很多工作经验。\n\n2.让它算构成-选择低价值的部分-清理工具结果。这个方案副作用最轻。\n\n3.让它算构成-选择想要保留的部分-转移记录，以后使用那个转出的会话。\n  或者对于像我一样觉得读了交接文档的新会话没以前聪明的用户，可以只是把某方面工作的内容转出去，减少原会话工作量。     但要注意，这里如果选转出而不是复制，会使原会话压缩账失效。\n\n4.让它算构成-选择想要保留的部分-折叠记忆，把它变得像小会话一样，进行操作。\n\n清理完，占用为什么没变？\n- 占用 = 上一次请求实际发出去的体积，不是文件大小。清完要重启 DSH → 打开会话 → 发一句话，数字才会按新内容重算。\n- 带「·压」的会话，占用来自 billion-context 的折叠账；删文件不影响账，要等重启后第一轮重建账才反映出来。\n- 已经被折进账里的工具结果本来就不在请求中，删它们只让文件变小，出网体积不会动。想真降下来就用「折叠记忆」或「整轮删除」。\n"
     // 用户点了「仍然清理」之后，写操作带上这个标记，跳过「会话开着」的拦截
     let 强制态 = false
     const 设强制态 = (v) => { 强制态 = v }
@@ -93,6 +95,31 @@ window.__ModuleLoader__.load({
       }
       const [结果, 设结果] = useState(null)
   const 动作名 = 结果?.还原 ? '还原' : 结果?.折叠 ? '折叠重复注入' : 结果?.清旧 ? '清旧轮次' : 结果?.模式 ? '清理' : '这次操作'
+  const [帮文, 设帮文] = useState('')
+  useEffect(() => {
+    if (!帮开) return
+    请求('/help')
+      .then((j) => 设帮文(j.文本 && j.文本.trim() ? j.文本 : 默认帮助文))
+      .catch(() => 设帮文(默认帮助文))
+  }, [帮开])
+  const 存帮 = async () => {
+    try {
+      await 请求('/help', { 文本: 帮文 })
+      设帮开(false)
+    } catch (e) {
+      设错(String(e.message || e))
+      设注(e.下一步 || '')
+    }
+  }
+  const 复帮 = async () => {
+    try {
+      await 请求('/help', { 文本: '' })
+      设帮文(默认帮助文)
+    } catch (e) {
+      设错(String(e.message || e))
+      设注(e.下一步 || '')
+    }
+  }
       const [备份表, 设备份表] = useState([])
       const [注入, 设注入] = useState(null)
       const [折确认, 设折确认] = useState(false)
@@ -752,50 +779,46 @@ window.__ModuleLoader__.load({
           ])
           : null,
         提醒重启 ? 重启弹窗(() => 设提醒重启(false), 动作名) : null,
-      帮开 ? 帮助弹窗(() => 设帮开(false)) : null,
+      帮开 ? 帮助弹窗({ 关: () => 设帮开(false), 文: 帮文, 设文: 设帮文, 存: 存帮, 复: 复帮 }) : null,
       ])
     }
 
     // 任何清除/折叠/还原之后都要先重启宿主，否则它会把内存里的旧记录写回去
-    // 帮助弹窗：正文取自使用说明文档
-    function 帮助弹窗(关) {
-      const 卡 = { maxWidth: 560, width: '100%', maxHeight: '80vh', display: 'flex', flexDirection: 'column', background: '#1b1b1f', color: '#eee', border: `1px solid ${色.边框}`, borderRadius: 12, padding: '16px 18px 12px', boxShadow: '0 12px 40px rgba(0,0,0,.5)', fontSize: 13, lineHeight: 1.7 }
+    // 帮助弹窗：正文可编辑，保存到服务端（数据根/help.md），清空即恢复出厂正文
+    function 帮助弹窗({ 关, 文, 设文, 存, 复 }) {
+      const 卡 = { maxWidth: 620, width: '100%', maxHeight: '82vh', display: 'flex', flexDirection: 'column', background: '#1b1b1f', color: '#eee', border: `1px solid ${色.边框}`, borderRadius: 12, padding: '16px 16px 12px', boxShadow: '0 12px 40px rgba(0,0,0,.5)', fontSize: 13, lineHeight: 1.6 }
       const 罩 = { position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }
       return h('div', { key: 'help-mask', style: 罩 },
         h('div', { style: 卡 }, [
-          h('div', { key: 't', style: { fontWeight: 600, fontSize: 14, marginBottom: 8 } }, '帮助'),
-          h('div', { key: 'b', style: { flex: 1, overflowY: 'auto', minHeight: 80 } }, [
-              h('div', { key: 'p0', style: { marginBottom: 4, whiteSpace: 'pre-wrap' } }, "会话体积过大的坏处（个人经验，只供参考）："),
-              h('div', { key: 'p1', style: { marginBottom: 4, whiteSpace: 'pre-wrap' } }, "1.上下文占用较高时，模型注意力会降低，并更可能失忆。超窗会直接无法使用。"),
-              h('div', { key: 'p2', style: { marginBottom: 4, whiteSpace: 'pre-wrap' } }, "2.请求体过大，你发送信息后模型会延迟收到（“暂未响应”或超长“分析需求”），严重时直接卡住（这个不太常见）。"),
-              h('div', { key: 'p3', style: { marginBottom: 4, whiteSpace: 'pre-wrap' } }, "3.会话总体积过大，打开会话需要更长时间，并增加报错时的修理难度。"),
-              h('div', { key: 'g4', style: { height: 8 } }),
-              h('div', { key: 'p5', style: { marginBottom: 4, whiteSpace: 'pre-wrap' } }, "  折叠记忆是用billion-context 的压缩记忆替换原对话，会话总体积会明显变小，请求体大小也会降。不过主要作用体现在压缩账失效后（billion-context炸了会话也能用）。折叠后，会话将无法直接读到被折叠原文（虽然它没事也不会去读）。有需要的话，可以让它去备份那里找，不一定要还原到备份。"),
-              h('div', { key: 'g6', style: { height: 8 } }),
-              h('div', { key: 'p7', style: { marginBottom: 4, whiteSpace: 'pre-wrap' } }, "  如果因为本插件，会话出了任何问题，还原备份就可以解决。使用插件清理后，在重启 dsh（只关窗口不行）之前不要点开会话，不然就等着还原到备份吧。"),
-              h('div', { key: 'g8', style: { height: 8 } }),
-              h('div', { key: 'p9', style: { marginBottom: 4, whiteSpace: 'pre-wrap' } }, "  要清理带 ⚠ 会话，由简到繁有以下参考方案："),
-              h('div', { key: 'p10', style: { marginBottom: 4, whiteSpace: 'pre-wrap' } }, "1.留最近几十轮，然后直接选清理工具结果。工具结果占了上下文的大部分，但会话可能失去很多工作经验。"),
-              h('div', { key: 'g11', style: { height: 8 } }),
-              h('div', { key: 'p12', style: { marginBottom: 4, whiteSpace: 'pre-wrap' } }, "2.让它算构成-选择低价值的部分-清理工具结果。这个方案副作用最轻。"),
-              h('div', { key: 'g13', style: { height: 8 } }),
-              h('div', { key: 'p14', style: { marginBottom: 4, whiteSpace: 'pre-wrap' } }, "3.让它算构成-选择想要保留的部分-转移记录，以后使用那个转出的会话。"),
-              h('div', { key: 'p15', style: { marginBottom: 4, whiteSpace: 'pre-wrap' } }, "  或者对于像我一样觉得读了交接文档的新会话没以前聪明的用户，可以只是把某方面工作的内容转出去，减少原会话工作量。     但要注意，这里如果选转出而不是复制，会使原会话压缩账失效。"),
-              h('div', { key: 'g16', style: { height: 8 } }),
-              h('div', { key: 'p17', style: { marginBottom: 4, whiteSpace: 'pre-wrap' } }, "4.让它算构成-选择想要保留的部分-折叠记忆，把它变得像小会话一样，进行操作。"),
-              h('div', { key: 'g-q', style: { height: 12 } }),
-              h('div', { key: 'q0', style: { marginBottom: 4, fontWeight: 600 } }, '清理完，占用为什么没变？'),
-              h('div', { key: 'q1', style: { marginBottom: 4, whiteSpace: 'pre-wrap' } }, '- 占用 = 上一次请求实际发出去的体积，不是文件大小。清完要重启 DSH → 打开会话 → 发一句话，数字才会按新内容重算。'),
-              h('div', { key: 'q2', style: { marginBottom: 4, whiteSpace: 'pre-wrap' } }, '- 带「·压」的会话，占用来自 billion-context 的折叠账；删文件不影响账，要等重启后第一轮请求重建账才反映出来。'),
-              h('div', { key: 'q3', style: { marginBottom: 4, whiteSpace: 'pre-wrap' } }, '- 已经被折进账里的工具结果本来就不在请求中，删它们只让文件变小，出网体积不会动。想真的降下来，用「折叠记忆」或「整轮删除」。'),
-              h('div', { key: 'g-q', style: { height: 14 } }),
-              h('div', { key: 'q0', style: { marginBottom: 4, fontWeight: 600 } }, '清理完，占用为什么没变？'),
-              h('div', { key: 'q1', style: { marginBottom: 4, whiteSpace: 'pre-wrap' } }, '- 占用 = 上一次请求实际发出去的体积，不是文件大小。清完要重启 DSH → 打开会话 → 发一句话，数字才会按新内容重算。'),
-              h('div', { key: 'q2', style: { marginBottom: 4, whiteSpace: 'pre-wrap' } }, '- 带「·压」的会话，占用来自 billion-context 的折叠账；删文件不影响账，要等重启后第一轮请求重建账才反映出来。'),
-              h('div', { key: 'q3', style: { marginBottom: 4, whiteSpace: 'pre-wrap' } }, '- 已经被折进账里的工具结果本来就不在请求中，删它们只让文件变小，出网体积不会动。想真降下来就用「折叠记忆」或「整轮删除」。'),
+          h('div', { key: 't', style: { fontWeight: 600, fontSize: 14, marginBottom: 8 } }, '帮助（可直接改，保存后一直生效）'),
+          h('textarea', {
+            key: 'e',
+            value: 文,
+            spellCheck: false,
+            onChange: (e) => 设文(e.target.value),
+            style: {
+              flex: 1,
+              minHeight: 320,
+              width: '100%',
+              boxSizing: 'border-box',
+              resize: 'vertical',
+              background: 'rgba(255,255,255,0.04)',
+              color: 'inherit',
+              border: `1px solid ${色.边框}`,
+              borderRadius: 8,
+              padding: 10,
+              fontSize: 12.5,
+              lineHeight: 1.65,
+              fontFamily: 'inherit',
+              whiteSpace: 'pre-wrap',
+            },
+          }),
+          h('div', { key: 'h', style: { ...小字, marginTop: 6 } }, '空行会原样保留。点「恢复出厂」会丢掉你改的内容。'),
+          h('div', { key: 'a', style: { display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 10 } }, [
+            h('button', { key: 'r', style: { ...钮, borderColor: 色.边框 }, onClick: 复 }, '恢复出厂'),
+            h('button', { key: 'c', style: { ...钮, borderColor: 色.边框 }, onClick: 关 }, '关闭'),
+            h('button', { key: 's', style: { ...钮, borderColor: 色.好, color: 色.好, padding: '5px 18px' }, onClick: 存 }, '保存'),
           ]),
-          h('div', { key: 'a', style: { display: 'flex', justifyContent: 'flex-end', marginTop: 12 } },
-            h('button', { style: { ...钮, padding: '5px 18px' }, onClick: 关 }, '关闭')),
         ]))
     }
 
