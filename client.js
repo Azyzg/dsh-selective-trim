@@ -1,5 +1,5 @@
 window.__ModuleLoader__.load({
-  id: 'dsh-context-cleaner',
+  id: 'dsh-selective-trim',
   factory(require) {
     const React = require('react')
     const h = React.createElement
@@ -24,7 +24,7 @@ window.__ModuleLoader__.load({
       cursor: 'pointer',
     }
     const 小字 = { fontSize: 11, color: 色.次 }
-    const 服务基 = '/dsh-context-cleaner'
+    const 服务基 = '/dsh-selective-trim'
     // 用户点了「仍然清理」之后，写操作带上这个标记，跳过「会话开着」的拦截
     let 强制态 = false
     const 设强制态 = (v) => { 强制态 = v }
@@ -118,7 +118,7 @@ window.__ModuleLoader__.load({
 
       // 面板被关掉再打开时 React 会重新挂载，把「表」这一屏恢复回来：
       // 先看浏览器本地，没有就问插件自己要（换浏览器、清缓存也不丢）
-      const 表存键 = 'dsh-context-cleaner:表视图'
+      const 表存键 = 'dsh-selective-trim:表视图'
       const 装上表 = (v) => {
         if (!v || (!Array.isArray(v.表) && !v.原文)) return false
         设表数据(v)
@@ -556,7 +556,7 @@ window.__ModuleLoader__.load({
 
       return h('div', { style: { padding: '12px 14px', fontSize: 13, lineHeight: 1.5, height: '100%', overflowY: 'auto', boxSizing: 'border-box' } }, [
         h('div', { key: 'hd', style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 } }, [
-          h('div', { key: 't', style: { fontWeight: 600, fontSize: 14 } }, '清上下文'),
+          h('div', { key: 't', style: { fontWeight: 600, fontSize: 14 } }, '会话瘦身'),
           h('div', { key: 'r', style: { display: 'flex', gap: 6 } }, [
             h('button', { key: 'h', style: 钮, onClick: () => 设帮开(true) }, '帮助'),
             h('button', { key: 'f', style: 钮, onClick: 拉会话 }, '刷新'),
@@ -805,9 +805,9 @@ window.__ModuleLoader__.load({
 
     function 入口行(props) {
       return h('span', {
-        'data-dsh-plugin': 'dsh-context-cleaner',
+        'data-dsh-plugin': 'dsh-selective-trim',
         'data-dsh-part': 'sidebar-icon',
-        title: '清上下文',
+        title: '会话瘦身',
         onClick: () => props?.开?.(),
         style: { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, lineHeight: 0, color: 'inherit' },
       }, 扫帚图标())
@@ -816,7 +816,7 @@ window.__ModuleLoader__.load({
     return {
       inject: ['slots', 'layout'],
       apply(ctx) {
-        const 面板ID = 'context-cleaner'
+        const 面板ID = 'selective-trim'
         const 开 = () => {
           try { ctx.layout?.selectPanel(面板ID) } catch {}
         }
@@ -826,14 +826,14 @@ window.__ModuleLoader__.load({
         try {
           ctx.slots.inject('main', () => ctx.slots.inject('sidebar.panellist', () => {
             const 停主 = ctx.slots.register({ name: 'main', key: 面板ID, inject: () => ({ 关 }) }, 工作台)
-            const 停行 = ctx.slots.register({ name: 'sidebar.panellist', id: 面板ID, order: 32, label: () => '清上下文' }, (props) => 入口行({ ...props, 开, 关 }))
+            const 停行 = ctx.slots.register({ name: 'sidebar.panellist', id: 面板ID, order: 32, label: () => '会话瘦身' }, (props) => 入口行({ ...props, 开, 关 }))
             return () => {
               停行()
               停主()
             }
           }))
         } catch {
-          ctx.slots.inject('sidebar.panellist', () => ctx.slots.register({ name: 'sidebar.panellist', id: 面板ID, order: 32, label: () => '清上下文' }, (props) => 工作台({ ...props, 关 })))
+          ctx.slots.inject('sidebar.panellist', () => ctx.slots.register({ name: 'sidebar.panellist', id: 面板ID, order: 32, label: () => '会话瘦身' }, (props) => 工作台({ ...props, 关 })))
         }
       },
     }

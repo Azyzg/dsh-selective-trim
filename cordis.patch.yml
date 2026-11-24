@@ -1,3 +1,3 @@
 - insert:
-    - id: context-cleaner
-      name: dsh-context-cleaner
+    - id: selective-trim
+      name: dsh-selective-trim

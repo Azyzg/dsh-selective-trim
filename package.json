@@ -1,7 +1,7 @@
 {
-  "name": "dsh-context-cleaner",
+  "name": "dsh-selective-trim",
   "version": "0.1.0",
-  "description": "DSH 会话上下文清理面板：按工作段清理、折叠重复注入、备份与还原。",
+  "description": "DSH 会话瘦身面板：可选、可反悔地按段修剪会话，折叠重复系统注入，写盘前备份并用宿主校验器验过再落盘。",
   "license": "MIT",
   "author": "",
   "keywords": [
@@ -9,18 +9,21 @@
     "dsh-plugin",
     "deepseek-harness",
     "plugin",
+    "session",
+    "trim",
+    "selective",
     "context",
     "compaction",
     "billion-context"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/<你的用户名>/dsh-context-cleaner.git"
+    "url": "git+https://github.com/<你的用户名>/dsh-selective-trim.git"
   },
   "bugs": {
-    "url": "https://github.com/<你的用户名>/dsh-context-cleaner/issues"
+    "url": "https://github.com/<你的用户名>/dsh-selective-trim/issues"
   },
-  "homepage": "https://github.com/<你的用户名>/dsh-context-cleaner#readme",
+  "homepage": "https://github.com/<你的用户名>/dsh-selective-trim#readme",
   "type": "module",
   "engines": {
     "node": ">=22",

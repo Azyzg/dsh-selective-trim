@@ -1,4 +1,4 @@
-// dsh-context-cleaner 入口：注册 Web 路由与 ctx_dedupe 工具，具体实现在 lib/ 下
+// dsh-selective-trim 入口：注册 Web 路由与 ctx_dedupe 工具，具体实现在 lib/ 下
 import { 记, 状态 } from './lib/base.mjs'
 import { 处理请求, 注册去重工具, 试清除 } from './lib/api.mjs'
 import * as base from './lib/base.mjs'
@@ -13,7 +13,7 @@ import * as clean from './lib/clean.mjs'
 import * as ops from './lib/ops.mjs'
 import * as transfer from './lib/transfer.mjs'
 
-export const name = 'context-cleaner'
+export const name = 'selective-trim'
 export const inject = ['webServer', 'sessions', 'tools']
 export { 设保留份数 } from './lib/inject.mjs'
 
@@ -25,7 +25,7 @@ export function apply(ctx) {
   记(`sessionController: ${状态.会话控 ? '有' : '没有'} / sessions: ${状态.会话API ? '有' : '没有'}`)
 
   ctx.effect(() =>
-    ctx.webServer.register({ kind: 'prefix', path: '/dsh-context-cleaner', handler: 处理请求 }),
+    ctx.webServer.register({ kind: 'prefix', path: '/dsh-selective-trim', handler: 处理请求 }),
   )
   try {
     注册去重工具(ctx)

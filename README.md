@@ -1,4 +1,4 @@
-# dsh-context-cleaner
+# dsh-selective-trim
 
 给 [DeepSeek Harness](https://github.com/deepseek-ai) 用的会话上下文清理面板。侧栏点开，选一个会话，看它占多少、里面都是什么，再把不要的部分删掉——每次动文件前先备份，出问题一键还原。
 
@@ -24,7 +24,7 @@
 ## 目录结构
 
 ```
-index.js        入口：注册 /dsh-context-cleaner 路由与 ctx_dedupe 工具，导出 __test
+index.js        入口：注册 /dsh-selective-trim 路由与 ctx_dedupe 工具，导出 __test
 client.js       面板（React，按需加载）
 lib/base.mjs    路径/常量/日志/状态容器（会话 API、账库句柄）
 lib/io.mjs      会话日志读写（多帧 zstd 解析、逐帧压缩、宿主校验器调用）
@@ -45,10 +45,10 @@ lib/api.mjs     HTTP 路由分发、ctx_dedupe 工具注册
 
 ```bash
 # 从 GitHub 装
-dsh plugin install github:<用户名>/dsh-context-cleaner
+dsh plugin install github:<用户名>/dsh-selective-trim
 
 # 或本地开发（profile 里做 junction 后重启）
-dsh plugin install link:/绝对路径/dsh-context-cleaner
+dsh plugin install link:/绝对路径/dsh-selective-trim
 ```
 
 装完**重启 DSH**（只关窗口不算），侧栏会出现「清上下文」图标。
@@ -95,7 +95,7 @@ dsh plugin install link:/绝对路径/dsh-context-cleaner
 
 | 变量 | 默认 | 用途 |
 | --- | --- | --- |
-| `CONTEXT_CLEANER_HOME` | `~/.dsh/context-cleaner` | 备份、日志、校验器所在目录 |
+| `SELECTIVE_TRIM_HOME` | `~/.dsh/selective-trim` | 备份、日志、校验器所在目录 |
 | `BILLION_CONTEXT_DIR` | `~/.local/share/billion-context/sessions` | 压缩账所在目录（Windows 为 `%USERPROFILE%\.local\share\…`） |
 | `DSH_PERSIST_WORKER` | 自动探测 | 宿主会话格式校验器 `worker.cjs` 的路径 |
 | `DSH_ROOT` | — | DSH 安装目录，用于自动探测校验器 |
