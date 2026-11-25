@@ -616,7 +616,7 @@ window.__ModuleLoader__.load({
         h('div', { key: 'hd', style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 } }, [
           h('div', { key: 't', style: { fontWeight: 600, fontSize: 14 } }, '会话瘦身'),
           h('div', { key: 'r', style: { display: 'flex', gap: 6 } }, [
-            h('button', { key: 'h', style: 钮, onClick: () => 设帮开(true) }, '帮助'),
+            h('button', { key: 'h', style: 钮, onClick: () => 设帮开(true) }, '作者建议'),
             h('button', { key: 'f', style: 钮, onClick: 拉会话 }, '刷新'),
             h('button', { key: 'c', style: 钮, onClick: () => props.关?.() }, '关闭'),
           ]),
@@ -628,7 +628,7 @@ window.__ModuleLoader__.load({
           h('div', { key: 'x0', style: { marginBottom: 4 } }, "DSH 自己面板上那个百分比是「模型回报的上一次用量」，这里更准。"),
           h('div', { key: 'x1', style: { marginBottom: 4 } }, "对于bili-context压缩过的会话，删除整轮（包括转移）会导致无法与原有压缩账对应。不过只要会话未超窗，进行任意对话后就会重新压缩，没有太大影响。"),
           h('div', { key: 'x2', style: { marginBottom: 4 } }, "带「·压」表示这个数是bili-context压缩后的；带 ⚠ 表示压缩一旦失效，正文会超过 700K，有超窗风险。鼠标悬停在百分比上能看到详细信息。"),
-          h('div', { key: 'x3', style: { marginBottom: 4 } }, "想处理带 ⚠ 的会话，可以看看右上角的“帮助”。"),
+          h('div', { key: 'x3', style: { marginBottom: 4 } }, "想处理带 ⚠ 的会话，可以看看右上角的“作者建议”。"),
         ),
 
         h('div', { key: 'list', style: { maxHeight: 220, overflowY: 'auto', border: `1px solid ${色.边框}`, borderRadius: 8 } }, 列表),
@@ -793,7 +793,7 @@ window.__ModuleLoader__.load({
       const 罩 = { position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }
       return h('div', { key: 'help-mask', style: 罩 },
         h('div', { style: 卡 }, [
-          h('div', { key: 't', style: { fontWeight: 600, fontSize: 14, marginBottom: 8 } }, '帮助（可直接改，保存后一直生效）'),
+          h('div', { key: 't', style: { fontWeight: 600, fontSize: 14, marginBottom: 8 } }, '作者建议（可直接改，保存后一直生效）'),
           h('textarea', {
             key: 'e',
             value: 文,
