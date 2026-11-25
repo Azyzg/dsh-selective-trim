@@ -624,7 +624,6 @@ window.__ModuleLoader__.load({
         h('div', { key: 'need', style: { ...小字, marginBottom: 6, color: 色.警 } }, '本插件主要是为装了 billion-context 的 DSH 使用者做的；若未启用 billion-context，很多功能用不了。'),
         h('div', { key: 'd', style: { ...小字, marginBottom: 6 } }, '选会话 → 整理上下文构成，让那个会话自己列出占用表。折叠注入动手前自动备份，出问题在下面还原。'),
         h('div', { key: 'pcthelp', style: { ...小字, marginBottom: 8, userSelect: 'none' } },
-          h('div', { key: 'a' }, '百分比 = 压缩插件账本里记的「实际发出去」的体积 ÷ 窗口 1048K。'),
           h('div', { key: 'b' }, '带「·压」表示这个数取自压缩账；带 ⚠ 表示压缩账一旦失效、按正文重发会超过 700K，有直接超窗的风险。'),
           h('div', { key: 'c' }, '鼠标停在百分比上能看到两个数：账多少 K，按正文算是多少 K。'),
           h('div', { key: 'd' }, 'DSH 自己面板上那个百分比是「模型回报的上一次用量」，压缩生效时两者会差很多 —— 判断要不要清，以这里为准。')),
