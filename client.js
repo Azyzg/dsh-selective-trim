@@ -105,13 +105,14 @@ window.__ModuleLoader__.load({
   const 状态条 = () => h('div', {
     key: 'opbar',
     style: {
-      marginBottom: 8,
-      padding: '6px 10px',
-      borderRadius: 8,
-      fontSize: 12,
+      marginBottom: 忙 ? 12 : 8,
+      padding: 忙 ? '14px 16px' : '6px 10px',
+      borderRadius: 忙 ? 12 : 8,
+      fontSize: 忙 ? 15 : 12,
+      fontWeight: 忙 ? 600 : 400,
       lineHeight: 1.5,
       border: `1px solid ${忙 ? 色.警 : 色.好}`,
-      background: 忙 ? 'rgba(255,180,0,.10)' : 'rgba(0,180,120,.10)',
+      background: 忙 ? 'rgba(255,180,0,.14)' : 'rgba(0,180,120,.10)',
       display: 忙 || 提醒重启 ? 'flex' : 'none',
       alignItems: 'center',
       justifyContent: 'space-between',
@@ -119,7 +120,7 @@ window.__ModuleLoader__.load({
     },
   }, [
     h('span', { key: 't' }, 忙
-      ? `正在写入（${忙}）… 别关 DSH，写完了这里会变成重启提示`
+      ? `⏳ 正在写入（${忙}）… 别关 DSH，写完了这里会变成重启提示`
       : `${动作名}已写完、备份也存好了：现在退出是安全的，但请先重启 DSH 再打开这个会话，否则宿主会拿内存里的旧记录覆盖。`),
     忙 ? null : h('button', { key: 'x', style: { ...钮, padding: '2px 8px', fontSize: 11 }, onClick: () => 设提醒重启(false) }, '知道了'),
   ])
