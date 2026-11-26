@@ -81,6 +81,9 @@ window.__ModuleLoader__.load({
     }
 
 
+    // 系统绘制的下拉弹层不吃页面配色：不写死颜色就是白底白字，hover 时才看见。
+    const 选项样式 = { color: '#1b1d21', backgroundColor: '#ffffff' }
+
     function 工作台(props) {
       const [会话表, 设会话表] = useState([])
       const [窗口, 设窗口] = useState(1048576)
@@ -494,8 +497,10 @@ window.__ModuleLoader__.load({
               style: { ...钮, padding: '2px 6px', cursor: 'default' },
               onChange: (e) => 设预设(e.target.value),
             }, [
-              h('option', { key: '', value: '' }, '跟这条会话一样'),
-              ...预设表.map((p) => h('option', { key: p.id, value: p.id }, p.名 ? `${p.名}（${p.id}）` : p.id)),
+              h('option', { key: '', value: '', style: 选项样式 }, '跟这条会话一样'),
+              ...预设表.map((p) =>
+                h('option', { key: p.id, value: p.id, style: 选项样式 }, p.名 ? `${p.名}（${p.id}）` : p.id),
+              ),
             ]),
             h('span', { key: 'h', style: { color: 'rgba(255,255,255,0.45)' } }, '只对「复制记录」「转移记录」生效'),
           ]),
