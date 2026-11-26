@@ -135,6 +135,8 @@ window.__ModuleLoader__.load({
       const [载完, 设载完] = useState(false)
       const [勾, 设勾] = useState({})
       const [表确认, 设表确认] = useState('')
+      const [预设, 设预设] = useState('')
+      const [预设表, 设预设表] = useState([])
       const [视图, 设视图] = useState('列表')
       const [表数据, 设表数据] = useState(null)
 
@@ -154,6 +156,7 @@ window.__ModuleLoader__.load({
           const j = await 请求('/sessions')
           设会话表(j.会话 || [])
           if (j.窗口) 设窗口(j.窗口)
+          请求('/presets').then((r) => 设预设表(r.预设 || [])).catch(() => {})
           设载完(true)
         } catch (e) {
           设失败(e)
@@ -410,7 +413,7 @@ window.__ModuleLoader__.load({
         设错(''); 设注('')
         设结果(null)
         try {
-          const j = await 请求('/clean', { sid: 表数据?.当前 || 当前, 区间, 模式 })
+          const j = await 请求('/clean', { sid: 表数据?.当前 || 当前, 区间, 模式, 预设 })
           设结果(模式 === 'copy'
             ? { 复制: j.新id, 事件: j.事件 }
             : { 模式: j.模式, 剩余事件: j.剩余事件, 新字节: j.新字节, 备份: j.备份 })
@@ -456,6 +459,20 @@ window.__ModuleLoader__.load({
           ]),
           提问结果.建议 ? h('div', { key: 'g', style: { ...小字, marginTop: 4, lineHeight: 1.5 } }, `它的建议：${提问结果.建议}`) : null,
           h('div', { key: 'l', style: { marginTop: 4 } }, 表.map(行)),
+          h('div', { key: 'ps', style: { ...小字, marginTop: 8, display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' } }, [
+            h('span', { key: 'l' }, '新会话预设：'),
+            h('select', {
+              key: 's',
+              value: 预设,
+              disabled: !!忙,
+              style: { ...钮, padding: '2px 6px', cursor: 'default' },
+              onChange: (e) => 设预设(e.target.value),
+            }, [
+              h('option', { key: '', value: '' }, '跟这条会话一样'),
+              ...预设表.map((p) => h('option', { key: p, value: p }, p)),
+            ]),
+            h('span', { key: 'h', style: { color: 'rgba(255,255,255,0.45)' } }, '只对「复制记录」「转移记录」生效'),
+          ]),
           h('div', { key: 'f', style: { display: 'flex', gap: 6, alignItems: 'center', marginTop: 8, flexWrap: 'wrap' } }, [
             h('button', {
               key: 't1',
