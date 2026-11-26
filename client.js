@@ -120,7 +120,7 @@ window.__ModuleLoader__.load({
     },
   }, [
     h('span', { key: 't' }, 忙
-      ? `⏳ 正在写入（${忙}）… 别关 DSH，写完了这里会变成重启提示`
+      ? `⏳ 正在写入（${忙}）… 别关 DSH`
       : `${动作名}已写完、备份也存好了：现在退出是安全的，但请先重启 DSH 再打开这个会话，否则宿主会拿内存里的旧记录覆盖。`),
     忙 ? null : h('button', { key: 'x', style: { ...钮, padding: '2px 8px', fontSize: 11 }, onClick: () => 设提醒重启(false) }, '知道了'),
   ])
