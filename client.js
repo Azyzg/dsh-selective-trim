@@ -99,6 +99,30 @@ window.__ModuleLoader__.load({
       }
       const [结果, 设结果] = useState(null)
   const 动作名 = 结果?.还原 ? '还原' : 结果?.折叠 ? '折叠重复注入' : 结果?.清旧 ? '清旧轮次' : 结果?.模式 ? '清理' : '这次操作'
+
+  // 写入中 / 待重启都用同一条常驻横幅。不用遮罩弹窗：弹窗会盖住面板，
+  // 而且分不清是本轮弹的还是上一轮没关留下的——看着就像"秒完成"。
+  const 状态条 = () => h('div', {
+    key: 'opbar',
+    style: {
+      marginBottom: 8,
+      padding: '6px 10px',
+      borderRadius: 8,
+      fontSize: 12,
+      lineHeight: 1.5,
+      border: `1px solid ${忙 ? 色.警 : 色.好}`,
+      background: 忙 ? 'rgba(255,180,0,.10)' : 'rgba(0,180,120,.10)',
+      display: 忙 || 提醒重启 ? 'flex' : 'none',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 8,
+    },
+  }, [
+    h('span', { key: 't' }, 忙
+      ? `正在写入（${忙}）… 别关 DSH，写完了这里会变成重启提示`
+      : `${动作名}已写完、备份也存好了：现在退出是安全的，但请先重启 DSH 再打开这个会话，否则宿主会拿内存里的旧记录覆盖。`),
+    忙 ? null : h('button', { key: 'x', style: { ...钮, padding: '2px 8px', fontSize: 11 }, onClick: () => 设提醒重启(false) }, '知道了'),
+  ])
       const [备份表, 设备份表] = useState([])
       const [注入, 设注入] = useState(null)
       const [折确认, 设折确认] = useState(false)
@@ -576,6 +600,7 @@ window.__ModuleLoader__.load({
               title: '回到会话列表',
             }, '退出 ✕'),
           ]),
+    状态条(),
           h('div', { key: 'd', style: { ...小字, marginBottom: 6 } },
             '勾掉要清的段，再选「删工具结果」或「全删」。清理不会退出这个界面，清完可以接着看。'),
           错
@@ -658,6 +683,7 @@ window.__ModuleLoader__.load({
           h('div', { key: 'x3', style: { marginBottom: 4 } }, "想处理带 ⚠ 的会话，可以看看右上角的“作者建议”。"),
         ),
 
+  状态条(),
         h('div', { key: 'list', style: { maxHeight: 220, overflowY: 'auto', border: `1px solid ${色.边框}`, borderRadius: 8 } }, 列表),
         错
           ? h('div', {
@@ -808,63 +834,8 @@ window.__ModuleLoader__.load({
             结果.备份 ? h('div', { key: 'c', style: { ...小字, marginTop: 4 } }, '要重启 DSH 才会按新文件加载。') : null,
           ])
           : null,
-        提醒重启 && !忙 ? 重启弹窗(() => 设提醒重启(false), 动作名) : null,
       帮开 ? 帮助弹窗({ 关: () => 设帮开(false), 文: 帮文, 设文: 设帮文, 存: 存帮, 复: 复帮 }) : null,
       ])
-    }
-
-    // 任何清除/折叠/还原之后都要先重启宿主，否则它会把内存里的旧记录写回去
-    // 帮助弹窗：正文可编辑，保存到服务端（数据根/help.md），清空即恢复出厂正文
-    function 帮助弹窗({ 关, 文, 设文, 存, 复 }) {
-      const 卡 = { maxWidth: 620, width: '100%', maxHeight: '82vh', display: 'flex', flexDirection: 'column', background: '#1b1b1f', color: '#eee', border: `1px solid ${色.边框}`, borderRadius: 12, padding: '16px 16px 12px', boxShadow: '0 12px 40px rgba(0,0,0,.5)', fontSize: 13, lineHeight: 1.6 }
-      const 罩 = { position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }
-      return h('div', { key: 'help-mask', style: 罩 },
-        h('div', { style: 卡 }, [
-          h('div', { key: 't', style: { fontWeight: 600, fontSize: 14, marginBottom: 8 } }, '作者建议（可直接改，保存后一直生效）'),
-          h('textarea', {
-            key: 'e',
-            value: 文,
-            spellCheck: false,
-            onChange: (e) => 设文(e.target.value),
-            style: {
-              flex: 1,
-              minHeight: 320,
-              width: '100%',
-              boxSizing: 'border-box',
-              resize: 'vertical',
-              background: 'rgba(255,255,255,0.04)',
-              color: 'inherit',
-              border: `1px solid ${色.边框}`,
-              borderRadius: 8,
-              padding: 10,
-              fontSize: 12.5,
-              lineHeight: 1.65,
-              fontFamily: 'inherit',
-              whiteSpace: 'pre-wrap',
-            },
-          }),
-          h('div', { key: 'h', style: { ...小字, marginTop: 6 } }, '空行会原样保留。点「恢复出厂」会丢掉你改的内容。'),
-          h('div', { key: 'a', style: { display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 10 } }, [
-            h('button', { key: 'r', style: { ...钮, borderColor: 色.边框 }, onClick: 复 }, '恢复出厂'),
-            h('button', { key: 'c', style: { ...钮, borderColor: 色.边框 }, onClick: 关 }, '关闭'),
-            h('button', { key: 's', style: { ...钮, borderColor: 色.好, color: 色.好, padding: '5px 18px' }, onClick: 存 }, '保存'),
-          ]),
-        ]))
-    }
-
-    function 重启弹窗(关, 做了什么 = '这次操作') {
-
-      const 卡 = { maxWidth: 420, width: '100%', background: '#1b1b1f', color: '#eee', border: `1px solid ${色.边框}`, borderRadius: 12, padding: '18px 18px 14px', boxShadow: '0 12px 40px rgba(0,0,0,.5)', fontSize: 13, lineHeight: 1.6 }
-      const 罩 = { position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }
-      return h('div', { key: 'restart-mask', style: 罩 },
-        h('div', { style: 卡 }, [
-          h('div', { key: 't', style: { fontWeight: 600, fontSize: 14, marginBottom: 6 } }, `${做了什么}完成，请先重启 DeepSeek Harness`),
-          h('div', { key: 'b' }, '文件已经写完、备份也存好了，现在退出或重启都是安全的。但宿主内存里还是旧的：请先重启 DeepSeek Harness 再打开这个会话，否则它会拿旧记录覆盖刚改好的文件。'),
-          h('div', { key: 'a', style: { display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 14 } },
-            h('button', { style: { ...钮, borderColor: 色.边框, padding: '5px 14px' }, onClick: 关 }, '稍后'),
-            h('button', { style: { ...钮, borderColor: 色.好, color: 色.好, padding: '5px 18px' }, onClick: 关 }, '知道了，去重启')),
-          h('div', { key: 'v', style: { ...小字, marginTop: 8, textAlign: 'right' } }, '面板版本 cc4'),
-        ]))
     }
 
     // 图标跟宿主其他插件一致：单色线条，颜色随父级 currentColor，16px
