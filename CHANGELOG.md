@@ -1,3 +1,7 @@
+## 0.1.15 — 2026-11-26
+
+「新会话预设」下拉改成向宿主的 agentPresets 服务要列表（remoteExportList），所以插件注册的 scoped 预设也能选到 —— 本机现在有 standard / cordis / deep-ptc / minimal / ptc，deep-ptc 显示成「Deep PTC」。拿不到宿主服务时退回解析 profile 补丁里的 preset-*（这时不拿它否决调用方给的值）。
+
 ## 0.1.14 — 2026-11-26
 
 「转移记录」「复制记录」可以给新建的会话指定 agent 预设：表格下方多一个「新会话预设」下拉，默认「跟这条会话一样」，其余选项从 profile 补丁里的 preset-* 读出来（本机是 standard / cordis / minimal / ptc）。选中的值写进新会话头部的 agentPreset，建完的会话仍走宿主校验。

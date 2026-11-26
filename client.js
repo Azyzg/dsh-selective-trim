@@ -469,7 +469,7 @@ window.__ModuleLoader__.load({
               onChange: (e) => 设预设(e.target.value),
             }, [
               h('option', { key: '', value: '' }, '跟这条会话一样'),
-              ...预设表.map((p) => h('option', { key: p, value: p }, p)),
+              ...预设表.map((p) => h('option', { key: p.id, value: p.id }, p.名 ? `${p.名}（${p.id}）` : p.id)),
             ]),
             h('span', { key: 'h', style: { color: 'rgba(255,255,255,0.45)' } }, '只对「复制记录」「转移记录」生效'),
           ]),
