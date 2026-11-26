@@ -135,6 +135,8 @@ window.__ModuleLoader__.load({
       const [载完, 设载完] = useState(false)
       const [勾, 设勾] = useState({})
       const [表确认, 设表确认] = useState('')
+      const [分节注, 设分节注] = useState('')
+      const [分节确认, 设分节确认] = useState(false)
       const [预设, 设预设] = useState('')
       const [预设表, 设预设表] = useState([])
       const [视图, 设视图] = useState('列表')
@@ -398,6 +400,30 @@ window.__ModuleLoader__.load({
         ])
       }
 
+      const 按内容分节 = async () => {
+        if (!当前) return
+        if (!分节确认) {
+          设分节确认(true)
+          设分节注('再点一次：会向这条会话投一句话，让它读块标题、自己划分段落')
+          return
+        }
+        设分节确认(false)
+        设忙('让它自己分节')
+        设分节注('')
+        try {
+          const j = await 请求('/resection', { sid: 当前 })
+          if (j.ok) {
+            设分节注('已分 ' + j.段数 + ' 段：' + (j.段 || []).map((s) => s.起 + '-' + s.止 + ' ' + s.名).join('；') + '。下面点「折叠记忆」就按这个划分切。')
+          } else {
+            设分节注('没分成功：' + (j.错 || '') + (j.原文 ? '（它回的是：' + String(j.原文).slice(0, 120) + '）' : ''))
+          }
+        } catch (e) {
+          设注(String(e.message || e))
+        } finally {
+          设忙('')
+        }
+      }
+
       const 清理选中 = async (模式) => {
         const 行 = (表数据?.表 || []).filter((r) => 勾[r.键])
         if (!行.length) {
@@ -473,6 +499,16 @@ window.__ModuleLoader__.load({
             ]),
             h('span', { key: 'h', style: { color: 'rgba(255,255,255,0.45)' } }, '只对「复制记录」「转移记录」生效'),
           ]),
+          h('div', { key: 'sec', style: { display: 'flex', gap: 6, alignItems: 'center', marginTop: 8, flexWrap: 'wrap' } }, [
+            h('button', {
+              key: 'b',
+              style: { ...钮, borderColor: 分节确认 ? 色.主 : 色.边框, color: 分节确认 ? 色.主 : 'inherit' },
+              disabled: !!忙,
+              onClick: 按内容分节,
+            }, 分节确认 ? '确认让它自己分节？' : '按内容分节'),
+            h('span', { key: 'h', style: { ...小字 } }, '让它读块标题、自己划分段落；分完再点「折叠记忆」就按它的划分切'),
+          ]),
+          分节注 ? h('div', { key: 'sec2', style: { ...小字, marginTop: 4, lineHeight: 1.5 } }, 分节注) : null,
           h('div', { key: 'f', style: { display: 'flex', gap: 6, alignItems: 'center', marginTop: 8, flexWrap: 'wrap' } }, [
             h('button', {
               key: 't1',
