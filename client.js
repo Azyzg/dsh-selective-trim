@@ -237,6 +237,7 @@ window.__ModuleLoader__.load({
 
       const 折叠 = async () => {
         设忙('折叠重复注入')
+        设提醒重启(false)
         设错(''); 设注('')
         try {
           const j = await 请求('/dedupe', { sid: 当前 })
@@ -255,6 +256,8 @@ window.__ModuleLoader__.load({
 
       const 清旧轮 = async () => {
         if (!当前) return
+
+        设提醒重启(false)
         设忙(清旧模式 === 'drop' ? '整轮删除' : 清旧模式 === 'memory' ? '换成折叠记忆' : 清旧模式 === 'move' ? '转移记录' : '清旧轮次（工具结果）')
         设错(''); 设注('')
         try {
@@ -322,6 +325,7 @@ window.__ModuleLoader__.load({
 
       const 还原 = async (名) => {
         设忙('还原中')
+        设提醒重启(false)
         设错(''); 设注('')
         try {
           const j = await 请求('/restore', { 名 })
@@ -413,6 +417,7 @@ window.__ModuleLoader__.load({
           return
         }
         设忙(模式 === 'tools' ? '删工具结果' : 模式 === 'memory' ? '换成折叠记忆' : 模式 === 'copy' ? '复制记录' : 模式 === 'move' ? '转移记录' : '全删')
+        设提醒重启(false)
         设错(''); 设注('')
         设结果(null)
         try {
@@ -803,7 +808,7 @@ window.__ModuleLoader__.load({
             结果.备份 ? h('div', { key: 'c', style: { ...小字, marginTop: 4 } }, '要重启 DSH 才会按新文件加载。') : null,
           ])
           : null,
-        提醒重启 ? 重启弹窗(() => 设提醒重启(false), 动作名) : null,
+        提醒重启 && !忙 ? 重启弹窗(() => 设提醒重启(false), 动作名) : null,
       帮开 ? 帮助弹窗({ 关: () => 设帮开(false), 文: 帮文, 设文: 设帮文, 存: 存帮, 复: 复帮 }) : null,
       ])
     }
@@ -854,7 +859,7 @@ window.__ModuleLoader__.load({
       return h('div', { key: 'restart-mask', style: 罩 },
         h('div', { style: 卡 }, [
           h('div', { key: 't', style: { fontWeight: 600, fontSize: 14, marginBottom: 6 } }, `${做了什么}完成，请先重启 DeepSeek Harness`),
-          h('div', { key: 'b' }, '文件已经改好了，但宿主内存里还是旧的。请务必先重启 DeepSeek Harness，再打开这个会话——否则它会拿旧记录覆盖掉刚改好的文件，可能把会话写坏。'),
+          h('div', { key: 'b' }, '文件已经写完、备份也存好了，现在退出或重启都是安全的。但宿主内存里还是旧的：请先重启 DeepSeek Harness 再打开这个会话，否则它会拿旧记录覆盖刚改好的文件。'),
           h('div', { key: 'a', style: { display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 14 } },
             h('button', { style: { ...钮, borderColor: 色.边框, padding: '5px 14px' }, onClick: 关 }, '稍后'),
             h('button', { style: { ...钮, borderColor: 色.好, color: 色.好, padding: '5px 18px' }, onClick: 关 }, '知道了，去重启')),
