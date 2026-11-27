@@ -659,7 +659,8 @@ window.__ModuleLoader__.load({
               结果.备份 ? h('div', { key: 'c', style: { ...小字, marginTop: 4 } }, '要重启 DSH 才会按新文件加载。') : null,
             ])
             : null,
-          备份区(),
+        注入区(),
+        备份区(),
         ])
       }
 
@@ -798,11 +799,12 @@ window.__ModuleLoader__.load({
                   ? '这条会话有 billion-context 的压缩账：清理后我会把账本一起备份并清掉，让它按新文件从零折叠（否则账会悬空、整本作废）。'
                   : '这条会话没有 billion-context 折叠账（不影响聊天，DSH 自己的上下文压缩还在）；清理只动文件，不涉及它。'),
             ]),
+            注入区(),
             备份区(),
           ])
           : h('div', { key: 'pick0', style: { ...小字, marginTop: 8 } }, '还没选会话'),
         忙 ? h('div', { key: 'w2', style: { ...小字, marginTop: 6 } }, `${忙}… ${等秒 ? 等秒 + ' 秒' : ''}${忙 === '投提问' ? '（那个会话正在跑，等它说完）' : ''}`) : null,
-        注入区(),
+
         结果
           ? h('div', { key: 'ok', style: { marginTop: 10, border: `1px solid ${色.边框}`, borderRadius: 8, padding: 8, fontSize: 12 } }, [
             h('div', { key: 'a' }, 结果.提问
