@@ -158,6 +158,32 @@ window.__ModuleLoader__.load({
       设注(e.下一步 || '')
     }
   }
+      // 作者建议的弹窗：一个可编辑的大文本框，保存写到服务端 help.md
+      const 帮助弹窗 = ({ 关, 文, 设文, 存, 复 }) =>
+        h('div', {
+          key: 'help',
+          style: { position: 'fixed', inset: 0, zIndex: 9998, background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 },
+        }, [
+          h('div', {
+            key: 'box',
+            style: { width: 560, maxWidth: '100%', maxHeight: '80vh', display: 'flex', flexDirection: 'column', background: 'rgba(28,30,34,0.98)', border: `1px solid ${色.边框}`, borderRadius: 10, padding: 14 },
+          }, [
+            h('div', { key: 't', style: { fontWeight: 600, marginBottom: 8 } }, '作者建议（可直接改，保存后一直生效）'),
+            h('textarea', {
+              key: 'ta',
+              value: 文,
+              spellCheck: false,
+              onChange: (e) => 设文(e.target.value),
+              style: { flex: 1, minHeight: 260, resize: 'vertical', fontSize: 12, lineHeight: 1.65, padding: 8, borderRadius: 6, border: `1px solid ${色.边框}`, background: 'rgba(255,255,255,0.04)', color: 'inherit', fontFamily: 'inherit' },
+            }),
+            h('div', { key: 'r', style: { display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 10 } }, [
+              h('button', { key: 'd', style: 钮, onClick: () => { void 复() } }, '恢复出厂'),
+              h('button', { key: 'c', style: 钮, onClick: 关 }, '关闭'),
+              h('button', { key: 's', style: { ...钮, borderColor: 色.好, color: 色.好 }, onClick: () => { void 存() } }, '保存'),
+            ]),
+          ]),
+        ])
+
       const [还确认, 设还确认] = useState('')
       const [等秒, 设等秒] = useState(0)
       const [载完, 设载完] = useState(false)
