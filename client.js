@@ -709,7 +709,7 @@ window.__ModuleLoader__.load({
         h('div', { key: 'need', style: { ...小字, marginBottom: 6, color: 色.警 } }, '本插件主要是为装了 billion-context 的 DSH 使用者做的；若未启用 billion-context，很多功能用不了。'),
         h('div', { key: 'd', style: { ...小字, marginBottom: 6 } }, '选会话 → 整理上下文构成，能让那个会话自己列出占用表，它完成后打开插件会自动弹到表格页面，表格在重启dsh前不会消失。'),
         h('div', { key: 'pcthelp', style: { ...小字, marginBottom: 8, userSelect: 'none' } },
-          h('div', { key: 'x0', style: { marginBottom: 4 } }, "无论如何，因为本插件导致的问题都可以通过将对应会话还原到备份解决。"),
+          h('div', { key: 'x0', style: { marginBottom: 4 } }, "本插件处理会话前会自动备份，出问题可在下面还原。无论如何，因为本插件导致的问题都可以通过将对应会话还原到备份解决。"),
           h('div', { key: 'x1', style: { marginBottom: 4 } }, "对于bili-context压缩过的会话，除了折叠重复注入，清理任何内容都会导致压缩账失效（只是无法对接，还原备份可以使压缩账重新生效）。不过只要会话未超窗，进行任意对话后就会重新压缩，没有太大影响。"),
           h('div', { key: 'x2', style: { marginBottom: 4 } }, "带「·压」表示这个数是bili-context压缩后的；带 ⚠ 表示压缩一旦失效，正文会超过 700K，有超窗风险。鼠标悬停在百分比上能看到详细信息。"),
           h('div', { key: 'x3', style: { marginBottom: 4 } }, "想处理带 ⚠ 的会话，可以看看右上角的“作者建议”。"),
