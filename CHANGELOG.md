@@ -1,3 +1,9 @@
+## 0.1.52
+
+- 修复「复制/转移出来的会话打不开」：`session/title` 的 `messageSeqs` 还指着原会话的 seq，重编后变成非法引用
+  （`session/title messageSeqs must cite distinct earlier human user/message events`）。现在只保留最后一条标题、
+  清空 `messageSeqs` 并标成用户标题，同时丢掉 `session/title-llm-request` 这类记账事件。
+
 ## 0.1.51
 
 - 「作者建议」的出厂正文跟着 help.md 走，以后改文件不用再改代码。
